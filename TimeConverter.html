@@ -179,26 +179,8 @@
 
     <script>
         const timeZones = [
-            'India-IST', 'Philippines-PHT', 'America/New_York-EST', 'America/Los_Angeles-PST', 'America/Chicago-CST',
-            'America/Denver-MST', 'America/Anchorage-AKST', 'America/Halifax-ADT', 'America/Sao_Paulo-BRT',
-            'America/Buenos_Aires-ART', 'Europe/London-GMT', 'Europe/Paris-CET', 'Europe/Berlin-CET', 'Europe/Moscow-MS',
-            'Europe/Istanbul-TRT', 'Asia/Tokyo-JST', 'Asia/Shanghai-CST', 'Asia/Singapore-SGT', 'Asia/Hong_Kong-HKT',
-            'Asia/Seoul-KST', 'Asia/Kolkata-IST', 'Asia/Dubai-GST', 'Australia/Sydney-AEDT', 'Australia/Melbourne-AEDT',
-            'Australia/Brisbane-AEST', 'Australia/Adelaide-ACDT', 'Australia/Perth-AWST', 'Pacific/Auckland-NZDT',
-            'Pacific/Fiji-FJT', 'Pacific/Honolulu-HST', 'Pacific/Chatham-CHAST', 'Pacific/Guam-GMT+10', 'Pacific/Samoa-SST',
-            'Pacific/Tahiti-TAH', 'Asia/Kathmandu-NPT', 'Asia/Dhaka-BDT', 'Asia/Colombo-IST', 'Asia/Yangon-MM',
-            'Asia/Vientiane-ICT', 'Asia/Manila-PHT', 'Asia/Jakarta-WIT', 'Asia/Taipei-CST', 'Asia/Ho_Chi_Minh-ICT',
-            'Asia/Ulaanbaatar-ULAT', 'Asia/Pyongyang-KST', 'Asia/Thimphu-BTT', 'Asia/Almaty-Almaty', 'Asia/Novosibirsk-NSK',
-            'Asia/Krasnoyarsk-KRA', 'Asia/Omsk-OMS', 'Asia/Yekaterinburg-SVT', 'Asia/Kamchatka-KAM', 'Asia/Karachi-PKST',
-            'Asia/Baghdad-AST', 'Asia/Beirut-EET', 'Asia/Jerusalem-IST', 'Asia/Amman-IST', 'Asia/Damascus-EET',
-            'Asia/Qatar-AST', 'Asia/Bahrain-AST', 'Asia/Kuwait-AST', 'Asia/Calcutta-IST', 'Asia/Chennai-IST',
-            'Asia/Hyderabad-IST', 'Asia/Islamabad-PKST', 'Asia/Lahore-PKST', 'Asia/Muscat-GST', 'Asia/Tbilisi-TBIST',
-            'Asia/Yerevan-AMT', 'Asia/Port_Moresby-PMST', 'Australia/Currie-AEST', 'Australia/Darwin-ACT', 'Australia/Lord_Howe-AEDT',
-            'Australia/Canberra-AEDT', 'Australia/ACT-ACT', 'Australia/South-ACT', 'Australia/North-ACT', 'Australia/Tasmania-AEDT',
-            'Pacific/Tarawa-KIT', 'Pacific/Wallis-WFT', 'Pacific/Apia-WST', 'Pacific/Chuuk-CHUT', 'Pacific/Ponape-PONT',
-            'Pacific/Efate-VUT', 'Pacific/Kiritimati-LINT', 'Asia/Tehran-IRST', 'Asia/Dubai-GST', 'Asia/Ashgabat-TMT',
-            'Asia/Samarkand-UZT', 'Asia/Tashkent-UZT', 'Asia/Kabul-AFT', 'Asia/Tokyo-JST', 'Asia/Saigon-ICT',
-            'Asia/Colombo-IST', 'Asia/Amman-IST'
+            'Asia/Kolkata-IST', 'Asia/Manila-PHT', 'America/New_York-EST', 'America/Los_Angeles-PST', 
+            'Europe/London-GMT', 'Europe/Paris-CET', 'Asia/Tokyo-JST', 'Australia/Sydney-AEDT'
         ];
 
         function populateDropdown() {
@@ -210,7 +192,7 @@
                 divFrom.textContent = zone;
                 divFrom.dataset.value = zone;
                 divFrom.onclick = () => {
-                    document.getElementById('from-timezone').value = zone;
+                    document.getElementById('from-timezone').value = zone.split('-')[0];
                     document.getElementById('from-timezone-toggle').textContent = zone;
                     fromMenu.style.display = 'none';
                 };
@@ -220,7 +202,7 @@
                 divTo.textContent = zone;
                 divTo.dataset.value = zone;
                 divTo.onclick = () => {
-                    document.getElementById('to-timezone').value = zone;
+                    document.getElementById('to-timezone').value = zone.split('-')[0];
                     document.getElementById('to-timezone-toggle').textContent = zone;
                     toMenu.style.display = 'none';
                 };
@@ -254,8 +236,8 @@
 
         function convertTime() {
             const date = document.getElementById('input-date').value;
-            const hours = parseInt(document.getElementById('input-hours').value);
-            const minutes = parseInt(document.getElementById('input-minutes').value);
+            const hours = parseInt(document.getElementById('input-hours').value, 10);
+            const minutes = parseInt(document.getElementById('input-minutes').value, 10);
             const ampm = document.getElementById('am-pm').value;
             const fromZone = document.getElementById('from-timezone').value;
             const toZone = document.getElementById('to-timezone').value;
@@ -265,19 +247,29 @@
                 return;
             }
 
-            const fromZoneOffset = moment.tz(fromZone).utcOffset();
-            const toZoneOffset = moment.tz(toZone).utcOffset();
+            // Convert 12-hour to 24-hour format
+            let formattedHours = hours;
+            if (ampm === 'PM' && hours !== 12) {
+                formattedHours += 12;
+            } else if (ampm === 'AM' && hours === 12) {
+                formattedHours = 0;
+            }
 
-            const inputDateTime = moment(`${date} ${hours}:${minutes} ${ampm}`, 'YYYY-MM-DD hh:mm A');
-            const utcDateTime = inputDateTime.utc();
-            const convertedDateTime = utcDateTime.clone().add(toZoneOffset - fromZoneOffset, 'minutes');
+            // Create moment object in 'fromZone'
+            const fromDateTime = moment.tz(`${date} ${formattedHours}:${minutes}`, 'YYYY-MM-DD HH:mm', fromZone);
 
+            // Convert to 'toZone'
+            const convertedDateTime = fromDateTime.clone().tz(toZone);
+
+            // Display the converted time
             document.getElementById('converted-time').textContent = convertedDateTime.format('dddd, DD/MM/YYYY, hh:mm A');
         }
 
-        populateDropdown();
+        document.addEventListener('DOMContentLoaded', populateDropdown);
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.41/moment-timezone-with-data.min.js"></script>
+
+    <!-- Moment.js with Timezone -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.34/moment-timezone-with-data.min.js"></script>
 </body>
 </html>
