@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Time Zone Converter</title>
+    <link rel="stylesheet" href="main.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Time Zone Converter</h1>
+      <p>Convert between different time zones with date adjustment.</p>
+
+      <div class="form-group">
+        <label for="input-date">Enter Date:</label>
+        <input type="date" id="input-date" />
+      </div>
+
+      <div class="form-group">
+        <label for="input-time">Enter Time (12-hour format):</label>
+        <input
+          type="number"
+          id="input-hours"
+          placeholder="HH"
+          min="1"
+          max="12"
+          style="width: 50px"
+        />
+        <input
+          type="number"
+          id="input-minutes"
+          placeholder="MM"
+          min="0"
+          max="59"
+          style="width: 50px"
+        />
+        <select id="am-pm">
+          <option value="AM">AM</option>
+          <option value="PM">PM</option>
+        </select>
+      </div>
+
+      <div class="form-group dropdown-container">
+        <label for="from-timezone">From Time Zone:</label>
+        <div id="from-timezone-toggle" class="dropdown-toggle">
+          Select Time Zone
+          <div class="dropdown-arrow"></div>
+        </div>
+        <div class="searchable-dropdown">
+          <input
+            type="text"
+            id="from-timezone"
+            placeholder="Search or type timezone"
+          />
+          <div class="dropdown-menu" id="from-timezone-menu"></div>
+        </div>
+      </div>
+
+      <div class="form-group dropdown-container">
+        <label for="to-timezone">To Time Zone:</label>
+        <div id="to-timezone-toggle" class="dropdown-toggle">
+          Select Time Zone
+          <div class="dropdown-arrow"></div>
+        </div>
+        <div class="searchable-dropdown">
+          <input
+            type="text"
+            id="to-timezone"
+            placeholder="Search or type timezone"
+          />
+          <div class="dropdown-menu" id="to-timezone-menu"></div>
+        </div>
+      </div>
+
+      <button onclick="convertTime()">Convert Time</button>
+
+      <div id="result">
+        <h2>Converted Date and Time:</h2>
+        <p id="converted-time">--:-- AM/PM on DD/MM/YYYY</p>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+
+    <!-- Moment.js with Timezone -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.34/moment-timezone-with-data-10-year-range.js"></script>
+  </body>
+</html>
