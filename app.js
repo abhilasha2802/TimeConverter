@@ -6,7 +6,7 @@ const timeZones = [
   "Europe/London-GMT",
   "Europe/Paris-CET",
   "Asia/Tokyo-JST",
-  "Australia/Sydney-AEDT",
+  
 ];
 
 function populateDropdown() {
